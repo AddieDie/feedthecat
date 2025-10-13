@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feed the Cat — Addie</title>
+    <link rel="stylesheet" href="src/css/style.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <div class="header-row">
+          <div>
+            <h1>Feed the Cat</h1>
+            <p class="tag">
+              A tiny interactive site for cat lovers — feed, play, and keep your
+              kitty cozy.
+            </p>
+          </div>
+          <div class="header-actions">
+            <button
+              id="theme-toggle"
+              class="icon-btn"
+              aria-pressed="false"
+              title="Toggle dark mode"
+            >
+              <span id="theme-icon">🌙</span>
+            </button>
+            <button
+              id="settings-toggle"
+              class="icon-btn"
+              title="Settings"
+              aria-expanded="false"
+            >
+              ⚙️
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div id="settings-panel" class="settings-panel" hidden>
+        <div class="settings-row">
+          <label>Hunger tick (seconds)</label>
+          <input
+            id="setting-hunger-tick"
+            type="number"
+            min="5"
+            step="5"
+            value="60"
+          />
+        </div>
+        <div class="settings-row">
+          <label>Feed amount</label>
+          <input
+            id="setting-feed-amt"
+            type="number"
+            min="1"
+            step="1"
+            value="12"
+          />
+        </div>
+        <div class="settings-row">
+          <label>Treat potency</label>
+          <input
+            id="setting-treat-pot"
+            type="number"
+            min="1"
+            step="1"
+            value="18"
+          />
+        </div>
+        <div class="settings-row">
+          <button id="save-settings" class="btn primary">Save settings</button>
+        </div>
+      </div>
+
+      <section class="card" id="cat-card">
+        <div class="cat-visual" aria-hidden="true">
+          <!-- Simple inline SVG cat illustration -->
+          <svg
+            id="cat-svg"
+            viewBox="0 0 200 160"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="fur" x1="0" x2="1">
+                <stop offset="0" stop-color="#f8c8a0" />
+                <stop offset="1" stop-color="#f1a66b" />
+              </linearGradient>
+            </defs>
+            <g id="cat-group">
+              <ellipse cx="100" cy="110" rx="60" ry="34" fill="url(#fur)" />
+              <circle cx="70" cy="78" r="28" fill="url(#fur)" />
+              <circle cx="130" cy="78" r="28" fill="url(#fur)" />
+              <circle id="eye-left" cx="62" cy="72" r="6" fill="#222" />
+              <circle id="eye-right" cx="138" cy="72" r="6" fill="#222" />
+              <path
+                id="mouth"
+                d="M85 90 q15 18 30 0"
+                stroke="#b05"
+                stroke-width="3"
+                fill="none"
+                stroke-linecap="round"
+              />
+              <polygon points="50,50 40,35 60,45" fill="#f1a66b" />
+              <polygon points="150,50 160,35 140,45" fill="#f1a66b" />
+            </g>
+          </svg>
+        </div>
+
+        <div class="info">
+          <div class="meters">
+            <label class="meter-label">Hunger</label>
+            <div class="meter">
+              <div
+                class="meter-fill"
+                id="hunger-fill"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="50"
+              ></div>
+            </div>
+
+            <label class="meter-label">Happiness</label>
+            <div class="meter meter-happy">
+              <div
+                class="meter-fill happy-fill"
+                id="happy-fill"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="50"
+              ></div>
+            </div>
+          </div>
+          <div class="stats">
+            <div class="hunger-text">
+              <strong id="hunger-percent">50%</strong> hungry
+            </div>
+            <div class="happy-text">
+              <strong id="happy-percent">50%</strong> happy
+            </div>
+            <div class="last-fed">
+              Last fed: <span id="last-fed">never</span>
+            </div>
+          </div>
+
+          <div class="controls">
+            <button id="feed-btn" class="btn primary">Feed the Cat</button>
+            <button id="buy-btn" class="btn">Buy Food (+5)</button>
+            <button id="treat-btn" class="btn">Give Treat</button>
+            <button id="pet-btn" class="btn">Pet the Cat</button>
+            <button id="play-btn" class="btn">Play with Cat</button>
+            <button id="ignore-btn" class="btn">Ignore</button>
+            <button id="reset-btn" class="btn secondary">Reset</button>
+          </div>
+
+          <div class="food-pile">
+            Food in pantry: <span id="food-count">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accessible live announcer -->
+      <div
+        id="announcer"
+        class="sr-only"
+        aria-live="polite"
+        aria-atomic="true"
+      ></div>
+
+      <footer class="footer">
+        <small>Made with ❤️ by ADDIE for cat lovers</small>
+      </footer>
+    </main>
+
+    <script src="src/js/app.js" defer></script>
+  </body>
+</html>
