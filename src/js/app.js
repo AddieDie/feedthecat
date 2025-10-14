@@ -4,17 +4,15 @@
   const THEME_KEY = "feed-the-cat:theme";
   const defaultState = { hunger: 50, food: 0, lastFed: null, happy: 50 };
 
-  // Default tuning constants (can be overridden by user settings)
-  let HUNGER_TICK_MS = 60_000; // passive tick every 60s (was 30s)
-  let HUNGER_PER_TICK = 1; // hunger increase per tick
-  let HAPPY_DECAY_PER_TICK = 0.5; // smaller happiness decay per tick
-  let FEED_HUNGER_REDUCTION = 12; // feeding reduces hunger by this much (was 20)
-  let BUY_AMOUNT = 5; // food added when buying
+  let HUNGER_TICK_MS = 60000;
+  let HUNGER_PER_TICK = 1;
+  let HAPPY_DECAY_PER_TICK = 0.5;
+  let FEED_HUNGER_REDUCTION = 12;
+  let BUY_AMOUNT = 5;
   let PET_HAPPY_INCREASE = 8;
-  let PLAY_HAPPY_INCREASE = 12; // slightly lower than before
-  let PLAY_HUNGER_INCREASE = 5; // playing increases hunger less now
+  let PLAY_HAPPY_INCREASE = 12;
+  let PLAY_HUNGER_INCREASE = 5;
 
-  // Settings persistence key
   const SETTINGS_KEY = "feed-the-cat:settings";
   let tickIntervalId = null;
 
@@ -70,21 +68,17 @@
       ? new Date(state.lastFed).toLocaleString()
       : "never";
 
-    // happiness
     if (el.happyFill) el.happyFill.style.width = state.happy + "%";
     if (el.happyPercent) el.happyPercent.textContent = state.happy + "%";
-    // happy text color changes when content
     if (state.happy >= 70) el.catGroup.classList.add("playful");
     else el.catGroup.classList.remove("playful");
 
-    // eyes blink when happy/low hunger
     if (state.hunger <= 30) {
       el.catGroup.classList.add("playful");
     } else {
       el.catGroup.classList.remove("playful");
     }
 
-    // disable feed if no food or already at 0 hunger
     const feedDisabled = state.food <= 0 || state.hunger <= 0;
     el.feedBtn.disabled = feedDisabled;
     if (feedDisabled) {
@@ -97,7 +91,6 @@
     if (el.happyFill) el.happyFill.setAttribute("aria-valuenow", state.happy);
   }
 
-  // New actions: give a treat (costs food, boosts happiness) and ignore (reduces happiness)
   function treat() {
     if (state.food <= 0) return flash("No treats left — buy food first.");
     state.food = Math.max(0, state.food - 1);
@@ -109,7 +102,6 @@
   }
 
   function ignore() {
-    // Ignoring reduces happiness but may slightly increase hunger (cat sulks)
     state.happy = clamp(state.happy - 12);
     state.hunger = clamp(state.hunger + 2);
     writeState(state);
@@ -121,7 +113,6 @@
 
   function feed() {
     if (state.food <= 0) return flash("No food! Buy some first.");
-    // feeding reduces hunger by FEED_HUNGER_REDUCTION and consumes 1 food
     state.hunger = clamp(state.hunger - FEED_HUNGER_REDUCTION);
     state.food = Math.max(0, state.food - 1);
     state.lastFed = Date.now();
@@ -134,14 +125,12 @@
   function buy() {
     state.food = state.food + BUY_AMOUNT;
     writeState(state);
-    // little pop animation on food count
     animateBuy();
     announce("Bought 5 food. Pantry " + state.food + " items.");
     render();
   }
 
   function pet() {
-    // pet increases happiness a bit
     state.happy = clamp(state.happy + PET_HAPPY_INCREASE);
     writeState(state);
     animatePet();
@@ -150,7 +139,6 @@
   }
 
   function play() {
-    // play increases happiness more but increases hunger a bit
     state.happy = clamp(state.happy + PLAY_HAPPY_INCREASE);
     state.hunger = clamp(state.hunger + PLAY_HUNGER_INCREASE);
     writeState(state);
@@ -165,7 +153,6 @@
     mouth.setAttribute("stroke", "#3b6");
     setTimeout(() => mouth.setAttribute("stroke", "#b05"), 600);
 
-    // small food bubble
     const pile = document.querySelector(".food-pile");
     const bubble = document.createElement("span");
     bubble.className = "feed-bubble";
@@ -201,14 +188,11 @@
     setTimeout(() => (svg.style.transform = ""), 500);
   }
 
-  // Theme toggle and persistence
   function loadTheme() {
     try {
       const t = localStorage.getItem(THEME_KEY) || "light";
       applyTheme(t);
-    } catch (e) {
-      /*ignore*/
-    }
+    } catch (e) {}
   }
   function applyTheme(t) {
     if (t === "dark") document.documentElement.classList.add("dark");
@@ -232,7 +216,6 @@
     setTimeout(() => (document.title = original), 900);
   }
 
-  // Settings panel wiring
   function loadSettings() {
     try {
       const raw = localStorage.getItem(SETTINGS_KEY);
@@ -241,8 +224,6 @@
       if (s.hungerTickSeconds) HUNGER_TICK_MS = s.hungerTickSeconds * 1000;
       if (s.feedAmt) FEED_HUNGER_REDUCTION = s.feedAmt;
       if (s.treatPot) {
-        // update treat potency used in treat()
-        // we'll store it in a variable on state for simplicity
         state.treatPot = s.treatPot;
       }
     } catch (e) {
@@ -253,7 +234,6 @@
   function saveSettings(values) {
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(values));
-      // apply immediately
       loadSettings();
       restartTick();
       flash("Settings saved");
@@ -272,13 +252,11 @@
     }, HUNGER_TICK_MS);
   }
 
-  // Start tick (use restartTick to make it restartable)
   loadSettings();
   restartTick();
 
   el.feedBtn.addEventListener("click", feed);
   el.buyBtn.addEventListener("click", buy);
-  // Settings panel controls
   const settingsToggle = document.getElementById("settings-toggle");
   const settingsPanel = document.getElementById("settings-panel");
   const settingHungerTick = document.getElementById("setting-hunger-tick");
@@ -313,7 +291,6 @@
   if (el.ignoreBtn) el.ignoreBtn.addEventListener("click", ignore);
   if (el.themeToggle) el.themeToggle.addEventListener("click", toggleTheme);
 
-  // init
   loadTheme();
   render();
 })();

@@ -1,7 +1,4 @@
-/* Consolidated variables and fixed nesting to produce valid CSS */
-
 :root {
-  /* Light theme tokens */
   --bg: linear-gradient(180deg, #fffaf6, #fff);
   --card: #ffffff;
   --muted: #6b6b6b;
@@ -14,7 +11,6 @@
 }
 
 :root.dark {
-  /* Dark theme tokens */
   --bg: linear-gradient(180deg, #0b0d11, #0f1317);
   --card: #0f1316;
   --muted: #bfc4c9;
@@ -44,7 +40,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   padding: 2rem;
 }
-
 .page {
   max-width: 980px;
   margin: 0 auto;
@@ -265,12 +260,10 @@ body {
   background: #efe9ee;
   color: #6b1c3a;
 }
-
 button#treat-btn,
 button#ignore-btn {
   border-radius: 12px;
 }
-
 @media (max-width: 720px) {
   .stats {
     flex-direction: column;
@@ -322,8 +315,6 @@ button#ignore-btn {
 .muted {
   color: var(--muted);
 }
-
-/* Settings panel */
 .settings-panel {
   max-width: 980px;
   margin: 0 auto 1rem;
@@ -351,8 +342,6 @@ button#ignore-btn {
   background: transparent;
   color: var(--text);
 }
-
-/* Mood emoji */
 .mood {
   font-size: 1.6rem;
   margin-left: 8px;
