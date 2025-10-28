@@ -175,15 +175,6 @@ Access the settings panel (⚙️) to customize:
    - Visit daily for streaks
    - Use keyboard shortcuts for quick actions
 
-## 🤝 Contributing
-
-Contributions are welcome! Here are some ways you can help:
-
-1. Report bugs
-2. Suggest new features
-3. Submit pull requests
-4. Improve documentation
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
