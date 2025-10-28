@@ -63,9 +63,140 @@ Extending the project
 - Add audio feedback when feeding or playing.
 - Add unit tests for the state logic.
 
+<<<<<<< HEAD
 License
 
 This project is provided under the MIT License. See `LICENSE` for details.
 
 
+=======
+## 🎮 Play Now
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/AddieDie/feedthecat.git
+   ```
+2. Open `index.html` in your browser, or serve it using a local server:
+   ```bash
+   # Using Python
+   python -m http.server 8000
+   
+   # Using Node.js
+   npx serve
+   ```
+
+## ✨ Features
+
+### Core Gameplay
+- 🍽️ Feed your cat and manage hunger levels
+- 😊 Keep your cat happy through various interactions
+- 🎯 Balance hunger and happiness meters
+- 💝 Multiple ways to interact: feed, play, pet, treat
+- 🔄 Persistent state saves between visits
+
+### Interactive Elements
+- 🎮 Keyboard shortcuts for quick actions:
+  - `F` - Feed the cat
+  - `B` - Buy food
+  - `T` - Give treat
+  - `P` - Play with cat
+  - `H` - Pet the cat
+  - `I` - Ignore (if you dare!)
+
+### Visual and Audio
+- 🎨 Beautiful animations and transitions
+- 🌓 Dark/light theme support
+- 🔊 Sound effects for all interactions
+- 💫 Smooth progress bar animations
+- 😺 Playful cat expressions
+
+### Achievement System
+- 🏆 8 unique achievements to unlock:
+  - First Meal
+  - Food Hoarder (50 food items)
+  - Happy Cat (100% happiness for 5 minutes)
+  - Treat Master (20 treats)
+  - Play Time (10 plays)
+  - Night Owl (play at midnight)
+  - Dedicated Owner (5-day streak)
+  - Perfect Care (80%+ stats for 10 minutes)
+
+### Statistics Tracking
+- 📊 Track your progress with detailed stats
+- 📈 Daily visit streaks
+- 🎯 Achievement progress
+- 📅 Persistent records
+
+## 🛠️ Technical Details
+
+### File Structure
+```
+feedthecat/
+├── index.html          # Main game interface
+├── src/
+│   ├── css/
+│   │   └── style.css   # Styles and animations
+│   ├── js/
+│   │   ├── app.js      # Core game logic
+│   │   └── achievements.js # Achievement system
+│   └── audio/          # Sound effects
+└── README.md
+```
+
+### Technologies Used
+- 💻 Pure HTML5, CSS3, and JavaScript
+- 🎨 CSS Custom Properties for theming
+- 💾 localStorage for game state persistence
+- 🔊 Web Audio API for sound effects
+- 📱 Responsive design for all devices
+
+## ⚙️ Configuration
+
+### Game Settings
+Access the settings panel (⚙️) to customize:
+- Hunger tick speed (seconds)
+- Feed amount per action
+- Treat potency
+- Sound effects toggle
+
+### Theme
+- Toggle between light/dark theme using the theme button (🌙/☀️)
+- Theme preference is saved automatically
+
+## 🎯 Getting Started
+
+1. **First Steps**
+   - Buy food using the "Buy Food" button
+   - Feed your cat when hungry
+   - Pet and play to increase happiness
+
+2. **Advanced Care**
+   - Balance hunger and happiness levels
+   - Use treats strategically for happiness boosts
+   - Maintain a daily visit streak
+   - Work towards achievements
+
+3. **Tips for Success**
+   - Keep food stocked up
+   - Don't let hunger get too high
+   - Mix different interactions
+   - Visit daily for streaks
+   - Use keyboard shortcuts for quick actions
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+## 🔄 Updates
+
+Latest updates:
+- Achievement system
+- Sound effects
+- Keyboard shortcuts
+- Improved animations
+- Statistics tracking
+- Mobile responsiveness improvements
+
+>>>>>>> cf7b13ed55e3de81c78acd614ff3920f3fcd487e
 
