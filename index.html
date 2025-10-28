@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
     <title>Feed the Cat — Addie</title>
     <link rel="stylesheet" href="src/css/style.css" />
   </head>
@@ -33,6 +33,14 @@
               aria-expanded="false"
             >
               ⚙️
+            </button>
+            <button
+              id="sound-toggle"
+              class="icon-btn"
+              aria-pressed="false"
+              title="Toggle sound effects"
+            >
+              🔊
             </button>
           </div>
         </div>
@@ -168,11 +176,41 @@
         aria-atomic="true"
       ></div>
 
+      <!-- Audio elements are now handled by JavaScript -->
+
+      <section class="stats-section">
+        <h2>Statistics</h2>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value" id="stat-total-feeds">0</div>
+            <div class="stat-label">Total Feeds</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-total-treats">0</div>
+            <div class="stat-label">Treats Given</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-total-plays">0</div>
+            <div class="stat-label">Times Played</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="stat-visit-streak">0</div>
+            <div class="stat-label">Day Streak</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="achievements-section">
+        <h2>Achievements</h2>
+        <div id="achievements-grid"></div>
+      </section>
+
       <footer class="footer">
         <small>Made with ❤️ by ADDIE for cat lovers</small>
       </footer>
     </main>
 
+    <script src="src/js/achievements.js" defer></script>
     <script src="src/js/app.js" defer></script>
   </body>
 </html>
