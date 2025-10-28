@@ -63,18 +63,6 @@ Extending the project
 - Add audio feedback when feeding or playing.
 - Add unit tests for the state logic.
 
-License
-
-This project is provided under the MIT License. See `LICENSE` for details.
-
-<<<<<<< HEAD
-=======
-# 🐱 Feed the Cat
-
-A delightful interactive web game where you take care of a virtual cat. Keep your kitty happy and well-fed through various interactions and unlock achievements along the way!
-
-![Feed the Cat Screenshot](screenshot.png)
-
 ## 🎮 Play Now
 
 1. Clone this repository:
@@ -202,7 +190,5 @@ Latest updates:
 - Improved animations
 - Statistics tracking
 - Mobile responsiveness improvements
-
->>>>>>> 0ffe28250fdaed2d8fe61d803c5032107016ddce
 
 
