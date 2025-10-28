@@ -14,7 +14,94 @@
   let PLAY_HUNGER_INCREASE = 5;
 
   const SETTINGS_KEY = "feed-the-cat:settings";
+  const SOUND_KEY = "feed-the-cat:sound";
   let tickIntervalId = null;
+  let soundEnabled = false;
+  
+  // Sound system
+  const sounds = {
+    feed: new Audio('src/audio/feed.mp3'),
+    purr: new Audio('src/audio/purr.mp3'),
+    play: new Audio('src/audio/play.mp3'),
+    treat: new Audio('src/audio/treat.mp3')
+  };
+
+  // Preload sounds
+  Object.values(sounds).forEach(sound => {
+    sound.load();
+    sound.volume = 0.6; // Set volume to 60%
+  });
+
+  // Initialize achievement system
+  const achievements = new AchievementSystem();
+  
+  // Initialize stats elements
+  const statElements = {
+    totalFeeds: document.getElementById('stat-total-feeds'),
+    totalTreats: document.getElementById('stat-total-treats'),
+    totalPlays: document.getElementById('stat-total-plays'),
+    visitStreak: document.getElementById('stat-visit-streak')
+  };
+
+  // Initialize achievements grid
+  function initializeAchievements() {
+    const grid = document.getElementById('achievements-grid');
+    if (!grid) return;
+
+    Object.values(ACHIEVEMENTS).forEach(achievement => {
+      const card = document.createElement('div');
+      card.className = 'achievement-card';
+      card.id = `achievement-${achievement.id}`;
+      if (achievements.checkAchievement(achievement.id)) {
+        card.classList.add('unlocked');
+      }
+
+      card.innerHTML = `
+        <div class="achievement-icon">${achievement.icon}</div>
+        <div class="achievement-text">
+          <div class="achievement-title">${achievement.title}</div>
+          <div class="achievement-desc">${achievement.description}</div>
+        </div>
+      `;
+
+      grid.appendChild(card);
+    });
+  }
+
+  // Update stats display
+  function updateStatsDisplay() {
+    if (statElements.totalFeeds) statElements.totalFeeds.textContent = achievements.stats.totalFeeds;
+    if (statElements.totalTreats) statElements.totalTreats.textContent = achievements.stats.totalTreats;
+    if (statElements.totalPlays) statElements.totalPlays.textContent = achievements.stats.totalPlays;
+    if (statElements.visitStreak) statElements.visitStreak.textContent = achievements.stats.visitStreak;
+  }
+
+  function playSound(id) {
+    if (!soundEnabled || !sounds[id]) return;
+    
+    try {
+      // Create a new Audio instance for each play to allow overlapping
+      const sound = new Audio(sounds[id].src);
+      sound.volume = 0.6;
+      
+      // Add slight random pitch variation for more natural sound
+      sound.playbackRate = 1 + (Math.random() * 0.2 - 0.1); // ±10% variation
+      
+      // Play the sound
+      sound.play().catch(err => {
+        console.log('Audio playback failed:', err);
+        // If audio fails, disable sound system
+        soundEnabled = false;
+        localStorage.setItem(SOUND_KEY, 'false');
+        if (soundToggle) {
+          soundToggle.setAttribute('aria-pressed', 'false');
+          soundToggle.textContent = '🔈';
+        }
+      });
+    } catch (err) {
+      console.error('Sound playback error:', err);
+    }
+  }
 
   function readState() {
     try {
@@ -95,9 +182,19 @@
     if (state.food <= 0) return flash("No treats left — buy food first.");
     state.food = Math.max(0, state.food - 1);
     state.happy = clamp(state.happy + 18);
+    
+    // Update achievements
+    achievements.stats.totalTreats++;
+    if (achievements.stats.totalTreats >= 20) {
+      achievements.awardAchievement('TREAT_MASTER');
+    }
+    
     writeState(state);
     animatePet();
+    playSound('treat');
     announce("You gave a treat. Happiness " + state.happy + "%.");
+    achievements.updateStats(state);
+    updateStatsDisplay();
     render();
   }
 
@@ -116,9 +213,19 @@
     state.hunger = clamp(state.hunger - FEED_HUNGER_REDUCTION);
     state.food = Math.max(0, state.food - 1);
     state.lastFed = Date.now();
+    
+    // Update achievements
+    achievements.stats.totalFeeds++;
+    if (achievements.stats.totalFeeds === 1) {
+      achievements.awardAchievement('FIRST_FEED');
+    }
+    
     writeState(state);
     animateFeed();
+    playSound('feed');
     announce("Fed the cat. Hunger " + state.hunger + "%.");
+    achievements.updateStats(state);
+    updateStatsDisplay();
     render();
   }
 
@@ -134,6 +241,7 @@
     state.happy = clamp(state.happy + PET_HAPPY_INCREASE);
     writeState(state);
     animatePet();
+    playSound('purr');
     announce("You petted the cat. Happiness " + state.happy + "%.");
     render();
   }
@@ -143,15 +251,23 @@
     state.hunger = clamp(state.hunger + PLAY_HUNGER_INCREASE);
     writeState(state);
     animatePlay();
+    playSound('play');
     announce("You played with the cat. Happiness " + state.happy + "%.");
     render();
   }
 
   function animateFeed() {
     const mouth = document.getElementById("mouth");
-    if (!mouth) return;
+    const catGroup = document.getElementById("cat-group");
+    if (!mouth || !catGroup) return;
+    
     mouth.setAttribute("stroke", "#3b6");
-    setTimeout(() => mouth.setAttribute("stroke", "#b05"), 600);
+    catGroup.classList.add("feeding");
+    
+    setTimeout(() => {
+      mouth.setAttribute("stroke", "#b05");
+      catGroup.classList.remove("feeding");
+    }, 600);
 
     const pile = document.querySelector(".food-pile");
     const bubble = document.createElement("span");
@@ -159,6 +275,8 @@
     bubble.textContent = "yum!";
     pile.appendChild(bubble);
     setTimeout(() => bubble.remove(), 900);
+    
+    playSound('feed');
   }
 
   function animateBuy() {
@@ -244,16 +362,69 @@
 
   function restartTick() {
     if (tickIntervalId) clearInterval(tickIntervalId);
+    
+    let perfectCareTimer = 0;
+    let happyTimer = 0;
+    
     tickIntervalId = setInterval(() => {
       state.hunger = clamp(state.hunger + HUNGER_PER_TICK);
       state.happy = clamp(Math.round(state.happy - HAPPY_DECAY_PER_TICK));
+      
+      // Check for long-term achievements
+      if (state.happy >= 100) {
+        happyTimer += HUNGER_TICK_MS;
+        if (happyTimer >= 300000) { // 5 minutes
+          achievements.awardAchievement('HAPPY_CAT');
+        }
+      } else {
+        happyTimer = 0;
+      }
+      
+      if (state.hunger >= 80 && state.happy >= 80) {
+        perfectCareTimer += HUNGER_TICK_MS;
+        if (perfectCareTimer >= 600000) { // 10 minutes
+          achievements.awardAchievement('PERFECT_CARE');
+        }
+      } else {
+        perfectCareTimer = 0;
+      }
+      
       writeState(state);
+      achievements.updateStats(state);
+      updateStatsDisplay();
       render();
     }, HUNGER_TICK_MS);
   }
 
   loadSettings();
   restartTick();
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Don't trigger shortcuts when typing in inputs
+    if (e.target.tagName === 'INPUT') return;
+    
+    switch(e.key.toLowerCase()) {
+      case 'f':
+        if (!el.feedBtn.disabled) feed();
+        break;
+      case 'b':
+        buy();
+        break;
+      case 't':
+        if (state.food > 0) treat();
+        break;
+      case 'p':
+        play();
+        break;
+      case 'h':
+        pet();
+        break;
+      case 'i':
+        ignore();
+        break;
+    }
+  });
 
   el.feedBtn.addEventListener("click", feed);
   el.buyBtn.addEventListener("click", buy);
@@ -289,8 +460,53 @@
   if (el.playBtn) el.playBtn.addEventListener("click", play);
   if (el.treatBtn) el.treatBtn.addEventListener("click", treat);
   if (el.ignoreBtn) el.ignoreBtn.addEventListener("click", ignore);
+  // Sound toggle functionality
+  const soundToggle = document.getElementById('sound-toggle');
+  
+  function loadSoundPreference() {
+    try {
+      // Default to true for better user experience
+      soundEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
+      if (soundToggle) {
+        soundToggle.setAttribute('aria-pressed', soundEnabled);
+        soundToggle.textContent = soundEnabled ? '🔊' : '🔈';
+      }
+      // Test sound system
+      if (soundEnabled) {
+        const testSound = new Audio();
+        testSound.src = sounds.feed.src;
+        testSound.volume = 0;
+        testSound.play().catch(err => {
+          console.log('Sound system test failed:', err);
+          // Don't disable sounds on initial test
+        });
+      }
+    } catch (e) {
+      console.error('loadSoundPreference', e);
+      soundEnabled = false;
+    }
+  }
+
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    try {
+      localStorage.setItem(SOUND_KEY, soundEnabled);
+      if (soundToggle) {
+        soundToggle.setAttribute('aria-pressed', soundEnabled);
+        soundToggle.textContent = soundEnabled ? '🔊' : '🔈';
+      }
+    } catch (e) {
+      console.error('toggleSound', e);
+    }
+  }
+
   if (el.themeToggle) el.themeToggle.addEventListener("click", toggleTheme);
+  if (soundToggle) soundToggle.addEventListener("click", toggleSound);
 
   loadTheme();
+  loadSoundPreference();
+  initializeAchievements();
+  updateStatsDisplay();
+  achievements.updateStats(state);
   render();
 })();
